@@ -20,9 +20,13 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login successful")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login successful")),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 
@@ -36,9 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             TextField(controller: emailController, decoration: InputDecoration(labelText: 'Email')),
-            TextField(controller: passwordController, decoration: InputDecoration(labelText: 'Password')),
+            TextField(controller: passwordController, decoration: InputDecoration(labelText: 'Password'), obscureText: true),
             const SizedBox(height: 16),
-            loading ? CircularProgressIndicator() : ElevatedButton(onPressed: login, child: Text("Login")),
+            loading
+                ? CircularProgressIndicator()
+                : ElevatedButton(onPressed: login, child: Text("Login")),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/signup'),
               child: Text("Don't have an account? Signup"),

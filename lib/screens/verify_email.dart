@@ -22,13 +22,31 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         email: widget.email,
         code: codeController.text.trim(),
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Email verified successfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Email verified successfully!")),
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
+  void resendCode() async {
+    final provider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      await provider.sendVerificationEmail(widget.email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Verification code sent again to ${widget.email}")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to resend code: $e")),
+      );
     }
   }
 
@@ -42,11 +60,25 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         child: Column(
           children: [
             Text("Enter the code sent to ${widget.email}"),
-            TextField(controller: codeController, decoration: InputDecoration(labelText: "Verification Code")),
+            TextField(
+              controller: codeController,
+              decoration: InputDecoration(labelText: "Verification Code"),
+            ),
             const SizedBox(height: 16),
             loading
                 ? CircularProgressIndicator()
-                : ElevatedButton(onPressed: verify, child: Text("Verify Email")),
+                : Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: verify,
+                        child: Text("Verify Email"),
+                      ),
+                      TextButton(
+                        onPressed: resendCode,
+                        child: Text("Resend Code"),
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),

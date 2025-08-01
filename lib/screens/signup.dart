@@ -17,28 +17,34 @@ class _SignupScreenState extends State<SignupScreen> {
   final lastNameController = TextEditingController();
 
   void signup() async {
-  final provider = Provider.of<AuthProvider>(context, listen: false);
-  final email = emailController.text.trim();
-  try {
-    await provider.signup(
-      email: email,
-      password: passwordController.text.trim(),
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-    );
+    final provider = Provider.of<AuthProvider>(context, listen: false);
+    final email = emailController.text.trim();
 
-    // Redirect to email verification screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => VerifyEmailScreen(email: email),
-      ),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    try {
+      // Signup API
+      await provider.signup(
+        email: email,
+        password: passwordController.text.trim(),
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+      );
+
+      // Send verification code
+      await provider.sendVerificationEmail(email);
+
+      // Go to verify email screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => VerifyEmailScreen(email: email),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +58,11 @@ class _SignupScreenState extends State<SignupScreen> {
             TextField(controller: firstNameController, decoration: InputDecoration(labelText: 'First Name')),
             TextField(controller: lastNameController, decoration: InputDecoration(labelText: 'Last Name')),
             TextField(controller: emailController, decoration: InputDecoration(labelText: 'Email')),
-            TextField(controller: passwordController, decoration: InputDecoration(labelText: 'Password')),
+            TextField(controller: passwordController, decoration: InputDecoration(labelText: 'Password'), obscureText: true),
             const SizedBox(height: 16),
-            loading ? CircularProgressIndicator() : ElevatedButton(onPressed: signup, child: Text("Signup")),
+            loading
+                ? Center(child: CircularProgressIndicator())
+                : ElevatedButton(onPressed: signup, child: Text("Signup")),
           ],
         ),
       ),

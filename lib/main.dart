@@ -23,10 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => const LoginScreen(),
         '/signup': (_) => const SignupScreen(),
-        '/verify':
-            (_) => const VerifyEmailScreen(
-              email: 'test@example.com',
-            ), // dummy for now
+        '/verify': (_) => const VerifyEmailScreen(email: ''), // placeholder
       },
     );
   }
